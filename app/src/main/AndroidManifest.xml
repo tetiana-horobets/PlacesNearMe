@@ -18,10 +18,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCvGClls5s3G0N3RJ4oP1aV8yUjJZfk3Lk" />
 
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
-
         <activity android:name="com.tetiana.android.places.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

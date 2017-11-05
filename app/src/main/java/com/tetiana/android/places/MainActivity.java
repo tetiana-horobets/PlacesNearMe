@@ -1,12 +1,18 @@
 package com.tetiana.android.places;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import com.tetiana.android.places.service.PlaceLocalService;
+import com.tetiana.android.places.service.PlacesSearchCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final PlaceService placeService = new PlaceService();
+        final PlaceLocalService placeService = new PlaceLocalService(getMetadata());
         final EditText enterText = (EditText) findViewById(R.id.search_field);
         final Button showMap = (Button) findViewById(R.id.show_map);
         final ListView listView = (ListView) findViewById(R.id.found_places);
@@ -37,21 +43,36 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String searchCriteria = enterText.getText().toString();
-                List<String> places = placeService.findPlaces(searchCriteria);
+                placeService.findPlaces(searchCriteria, new PlacesSearchCallback() {
+                    @Override
+                    public void foundPlaces(List<String> places) {
+                        placesList.clear();
+                        for (int i = 0; i < Math.min(MAX_RESULTS, places.size()); i++) {
+                            placesList.add(places.get(i));
+                        }
 
-                placesList.clear();
-                for (int i = 0; i < Math.min(MAX_RESULTS, places.size()); i++) {
-                    placesList.add(places.get(i));
-                }
+                        arrayAdapter.notifyDataSetChanged();
 
-                arrayAdapter.notifyDataSetChanged();
-
-                if (placesList.isEmpty()) {
-                    showMap.setVisibility(View.GONE);
-                } else {
-                    showMap.setVisibility(View.VISIBLE);
-                }
+                        if (placesList.isEmpty()) {
+                            showMap.setVisibility(View.GONE);
+                        } else {
+                            showMap.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
             }
         });
+    }
+
+    private Bundle getMetadata() {
+        try {
+            ApplicationInfo applicationInfo = getPackageManager()
+                    .getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+
+            return applicationInfo.metaData;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("Main activity", "Unable to get metadata: ", e);
+            return null;
+        }
     }
 }
