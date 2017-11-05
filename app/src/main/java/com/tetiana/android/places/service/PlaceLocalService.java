@@ -1,5 +1,8 @@
 package com.tetiana.android.places.service;
 
+import android.app.Activity;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -18,37 +21,42 @@ public class PlaceLocalService {
 
     public static final String SEARCH_RADIUS = "10000";
 
-    private final PlaceRemoteService placeRemoteService;
-    private final String apiKey;
+    private final Activity mActivity;
+    private final String mApiKey;
+    private final PlaceRemoteService mPlaceRemoteService;
+    private final LocationService mLocationService;
 
-    public PlaceLocalService(Bundle metadata) {
+    public PlaceLocalService(Activity activity) {
+        mActivity = activity;
+
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(SimpleXmlConverterFactory.create())
                 .baseUrl("https://maps.googleapis.com/maps/api/")
                 .build();
 
-        placeRemoteService = retrofit.create(PlaceRemoteService.class);
-        apiKey = metadata.getString("com.google.android.geo.API_KEY");
+        mPlaceRemoteService = retrofit.create(PlaceRemoteService.class);
+        mLocationService = new LocationService(activity);
+        mApiKey = getMetadata().getString("com.google.android.geo.API_KEY");
     }
 
     public void findPlaces(String name, final PlacesSearchCallback resultCallback) {
         Map<String, String> query = new HashMap<>();
 
-        query.put("key", apiKey);
+        query.put("key", mApiKey);
         query.put("name", name);
         query.put("radius", SEARCH_RADIUS);
         query.put("types", "establishment");
-        query.put("location", "54.4066879,18.617713");
+        query.put("location", mLocationService.getLocation());
 
-        Call<PlaceSearchResponse> call = placeRemoteService.findPlaces(query);
+        Call<PlaceSearchResponse> call = mPlaceRemoteService.findPlaces(query);
 
         call.enqueue(new Callback<PlaceSearchResponse>() {
             @Override
             public void onResponse(Call<PlaceSearchResponse> call, Response<PlaceSearchResponse> response) {
                 List<String> places = new ArrayList<>();
 
-                for (PlaceSearchResult placeSearchResult : response.body().getResult()) {
-                    places.add(placeSearchResult.getName());
+                for (PlaceSearchResult result : response.body().getResult()) {
+                    places.add(result.getName() + "\n" + result.getVicinity());
                 }
 
                 resultCallback.foundPlaces(places);
@@ -59,5 +67,17 @@ public class PlaceLocalService {
                 Log.e("PlaceService", "onFailure: ", t);
             }
         });
+    }
+
+    private Bundle getMetadata() {
+        try {
+            ApplicationInfo applicationInfo = mActivity.getPackageManager()
+                    .getApplicationInfo(mActivity.getPackageName(), PackageManager.GET_META_DATA);
+
+            return applicationInfo.metaData;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("Main activity", "Unable to get metadata: ", e);
+            return null;
+        }
     }
 }

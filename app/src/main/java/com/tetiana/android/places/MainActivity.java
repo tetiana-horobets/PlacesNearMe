@@ -1,10 +1,7 @@
 package com.tetiana.android.places;
 
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final PlaceLocalService placeService = new PlaceLocalService(getMetadata());
+        final PlaceLocalService placeService = new PlaceLocalService(this);
         final EditText enterText = (EditText) findViewById(R.id.search_field);
         final Button showMap = (Button) findViewById(R.id.show_map);
         final ListView listView = (ListView) findViewById(R.id.found_places);
@@ -62,17 +59,5 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    private Bundle getMetadata() {
-        try {
-            ApplicationInfo applicationInfo = getPackageManager()
-                    .getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-
-            return applicationInfo.metaData;
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e("Main activity", "Unable to get metadata: ", e);
-            return null;
-        }
     }
 }
