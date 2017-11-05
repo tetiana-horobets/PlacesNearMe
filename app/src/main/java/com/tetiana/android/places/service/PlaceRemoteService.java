@@ -1,5 +1,7 @@
 package com.tetiana.android.places.service;
 
+import com.tetiana.android.places.entity.PlaceSearchResponse;
+
 import java.util.Map;
 
 import retrofit2.Call;

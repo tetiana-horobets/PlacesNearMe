@@ -1,4 +1,6 @@
-package com.tetiana.android.places.service;
+package com.tetiana.android.places.entity;
+
+import com.tetiana.android.places.entity.Place;
 
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
@@ -9,9 +11,9 @@ import java.util.List;
 public class PlaceSearchResponse {
 
     @ElementList(entry="result", inline = true)
-    private List<PlaceSearchResult> result;
+    private List<Place> result;
 
-    public List<PlaceSearchResult> getResult() {
+    public List<Place> getResult() {
         return result;
     }
 }

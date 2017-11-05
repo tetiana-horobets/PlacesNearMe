@@ -6,9 +6,10 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
-import java.util.ArrayList;
+import com.google.android.gms.maps.model.LatLng;
+import com.tetiana.android.places.entity.PlaceSearchResponse;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -40,26 +41,21 @@ public class PlaceLocalService {
     }
 
     public void findPlaces(String name, final PlacesSearchCallback resultCallback) {
+        LatLng location = mLocationService.getLocation();
         Map<String, String> query = new HashMap<>();
 
         query.put("key", mApiKey);
         query.put("name", name);
         query.put("radius", SEARCH_RADIUS);
         query.put("types", "establishment");
-        query.put("location", mLocationService.getLocation());
+        query.put("location", location.latitude + "," + location.longitude);
 
         Call<PlaceSearchResponse> call = mPlaceRemoteService.findPlaces(query);
 
         call.enqueue(new Callback<PlaceSearchResponse>() {
             @Override
             public void onResponse(Call<PlaceSearchResponse> call, Response<PlaceSearchResponse> response) {
-                List<String> places = new ArrayList<>();
-
-                for (PlaceSearchResult result : response.body().getResult()) {
-                    places.add(result.getName() + "\n" + result.getVicinity());
-                }
-
-                resultCallback.foundPlaces(places);
+                resultCallback.foundPlaces(response.body().getResult());
             }
 
             @Override
