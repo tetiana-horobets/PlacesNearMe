@@ -1,5 +1,6 @@
 package com.tetiana.android.places;
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         final PlaceLocalService placeService = new PlaceLocalService(this);
         final EditText enterText = (EditText) findViewById(R.id.search_field);
         final Button showMap = (Button) findViewById(R.id.show_map);
+        final Button showList = (Button) findViewById(R.id.show_list);
         final ListView listView = (ListView) findViewById(R.id.found_places);
         final ArrayList<String> placesList = new ArrayList<>();
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(arrayAdapter);
 
         final SupportMapFragment map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        map.getView().setVisibility(View.INVISIBLE);
+
         map.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(final GoogleMap googleMap) {
@@ -53,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
                 searchButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        map.getView().setVisibility(View.GONE);
+                        showList.setVisibility(View.GONE);
+                        listView.setVisibility(View.VISIBLE);
+                        showMap.setVisibility(View.VISIBLE);
+
                         LatLng location = locationService.getLocation();
                         MarkerOptions userMarker = new MarkerOptions().position(location).title("You");
                         userMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
@@ -86,6 +95,26 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                 });
+            }
+        });
+
+        showMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listView.setVisibility(View.GONE);
+                showMap.setVisibility(View.GONE);
+                map.getView().setVisibility(View.VISIBLE);
+                showList.setVisibility(View.VISIBLE);
+            }
+        });
+
+        showList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                map.getView().setVisibility(View.GONE);
+                showList.setVisibility(View.GONE);
+                listView.setVisibility(View.VISIBLE);
+                showMap.setVisibility(View.VISIBLE);
             }
         });
     }
