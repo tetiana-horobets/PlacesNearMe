@@ -1,6 +1,5 @@
 package com.tetiana.android.places;
 
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,9 +15,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.tetiana.android.places.entity.Place;
 import com.tetiana.android.places.service.LocationService;
 import com.tetiana.android.places.service.PlaceLocalService;
-import com.tetiana.android.places.entity.Place;
 import com.tetiana.android.places.service.PlacesSearchCallback;
 
 import java.util.ArrayList;
@@ -59,13 +58,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         map.getView().setVisibility(View.GONE);
                         showList.setVisibility(View.GONE);
-                        listView.setVisibility(View.VISIBLE);
-                        showMap.setVisibility(View.VISIBLE);
 
                         LatLng location = locationService.getLocation();
                         MarkerOptions userMarker = new MarkerOptions().position(location).title("You");
                         userMarker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
+                        googleMap.clear();
                         googleMap.addMarker(userMarker);
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 11));
 
@@ -86,9 +84,8 @@ public class MainActivity extends AppCompatActivity {
 
                                 arrayAdapter.notifyDataSetChanged();
 
-                                if (placesList.isEmpty()) {
-                                    showMap.setVisibility(View.GONE);
-                                } else {
+                                if (!placesList.isEmpty()) {
+                                    listView.setVisibility(View.VISIBLE);
                                     showMap.setVisibility(View.VISIBLE);
                                 }
                             }
