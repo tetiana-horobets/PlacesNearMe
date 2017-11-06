@@ -13,14 +13,14 @@ This project is a simple application which lets you locate the nearest places ar
 
 With the application you can find Bank, Gas Station, Restaurant, Bar or virtually anything near you.
 
-  ![alt text](../PlacesNearMe/screens/screens1.png)
+  ![](https://raw.githubusercontent.com/tetiana-horobets/PlacesNearMe/master/screens/screens1.png)
 
  You can see list of places. Displays details such as address.
 
-  ![alt text](../PlacesNearMe/screens/screens2.png)
+  ![](https://raw.githubusercontent.com/tetiana-horobets/PlacesNearMe/master/screens/screens2.png)
 
   Automatically finds your current location and plots it on a map.
 
-  ![alt text](../PlacesNearMe/screens/screens3.png)
+  ![](https://raw.githubusercontent.com/tetiana-horobets/PlacesNearMe/master/screens/screens3.png)
 
 
